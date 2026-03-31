@@ -38,4 +38,21 @@ public class UserService {
         // 4. Save user
         return userRepository.save(user);
     }
+
+    
+    public String loginUser(String email, String password) {
+
+    // 1. Find user by email
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    // 2. Check password
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+        throw new RuntimeException("Invalid password");
+    }
+
+    // 3. Success
+    return "Login successful!";
+}
+
 }
