@@ -3,6 +3,7 @@ package com.project.cms.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.project.cms.entity.Role;
@@ -13,6 +14,8 @@ import com.project.cms.repository.UserRepository;
 public class UserService {
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+  @Autowired
     private UserRepository userRepository;
 
     public User registerUser(User user) {
@@ -22,14 +25,17 @@ public class UserService {
 
         if (existingUser.isPresent()) {
             throw new RuntimeException("Email already exists");
-        }
+        }                                                       
 
         // 2. Assign default role
         if (user.getRole() == null) {
-            user.setRole(Role.USER);
-        }
+            user.setRole(Role.USER);     
 
-        // 3. Save user
+        }
+        // 3.  Encrypt password
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // 4. Save user
         return userRepository.save(user);
     }
 }
